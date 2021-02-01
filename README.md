@@ -1,3 +1,3 @@
 simple dictionary generator in rust
 
-can be used with [hashcat](https://hashcat.net/hashcat/)
+can be used for [hashcat](https://hashcat.net/hashcat/)
