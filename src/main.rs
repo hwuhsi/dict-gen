@@ -1,4 +1,6 @@
+use std::{fs::File, io::Write};
 
+use clap::Arg;
 
 
 
@@ -7,10 +9,21 @@ fn main() {
         .version("0.0.1")
         .about("dictionary generator in rust")
         .arg_from_usage("<INPUT> 'input mask'")
+        .arg(Arg::from_usage("-o, --output=[FILE] 'output file'"))
         .get_matches();
-    let s = s.value_of("INPUT").unwrap();
-    println!("{}", s);
-    parse(s);
+    let input = s.value_of("INPUT").expect("input is required");
+    let path = s.value_of("output");
+    match path {
+        Some(name) => {
+            parse(input, name);
+            println!("{}", input);
+        }
+        None => {
+            println!("no args!");
+        }
+    }
+    
+    
 }
 
 
@@ -35,17 +48,18 @@ impl Mu {
 
 
 
-fn traverse(result: &mut String, i: usize, it: & Vec<Mu>) {
+fn traverse(result: &mut String, i: usize, it: & Vec<Mu>, file: &mut File) {
     //ll.next();
     for ch in it[i].set.chars() {
         let modify = unsafe { result.as_bytes_mut() } ;
         modify[it[i].pos] = ch as u8;
         if i != 0 {
-            traverse(result, i - 1, it);
+            traverse(result, i - 1, it, file);
         } else {
             //let mut file = File::create("path").unwrap();
-            //file.write_all(result.as_bytes()).unwrap();
-            println!("{}", result);
+            
+            file.write_all(format!("{}\n", result).as_bytes()).unwrap();
+            //println!("{}", result);
         }
     } 
 }
@@ -67,7 +81,7 @@ static NUMBER_LCASE: &'static str = "0123456789abcdefghijklmnopqrstuvwxyz";
 static NUMBER_CCASE: &'static str = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static SYMBOL: &'static str = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
-fn parse(st: &str) {
+fn parse(st: &str, filename: &str) {
     let len = st.len();
 
     let mut result = String::with_capacity(12);
@@ -132,5 +146,7 @@ fn parse(st: &str) {
     }
     println!("{}", result);
     println!("{}", arr.len());
-    traverse(&mut result, arr.len() - 1, &arr)
+    let mut fi = File::create(filename).expect("create file error");
+    traverse(&mut result, arr.len() - 1, &arr, &mut fi);
+    println!("finished\noutput file name: {}", filename)
 }
