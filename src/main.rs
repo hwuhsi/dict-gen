@@ -16,7 +16,7 @@ fn main() {
     match path {
         Some(name) => {
             parse(input, name);
-            println!("{}", input);
+            //println!("{}", input);
         }
         None => {
             println!("no args!");
@@ -137,15 +137,14 @@ fn parse(st: &str, filename: &str) {
             result.push(st.chars().nth(i).unwrap());
             real_pos += 1;
             if  st.chars().nth(i) == Some('?') {
-                println!("yes");
                 flag = true;
                 //break;
             }
             //arr.push(Me::new_with_char(s));
         }
     }
-    println!("{}", result);
-    println!("{}", arr.len());
+    //println!("{}", result);
+    //println!("{}", arr.len());
     let mut fi = File::create(filename).expect("create file error");
     traverse(&mut result, arr.len() - 1, &arr, &mut fi);
     println!("finished\noutput file name: {}", filename)
